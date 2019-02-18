@@ -46,19 +46,20 @@ def resize(img):
 
 
 def main():
+    print("Here we go!")
     user_input = input("Enter image path\n")
     path = user_input
 
-    print("Here we go!")
-    image = cv2.imread(user_input)
+    user_input = input("Enter array name\n")
+    array_name = user_input
+
+    image = cv2.imread(path)
 
     resized = resize(image)
 
-    height, width, channels = image.shape
+    height, width, channels = resized.shape
 
-    print(height, width, channels)
-
-    result = "{ " + hex(height) + ", " + hex(width) + ", " + "\n"
+    result = "static uint_16t PROGMEM " + array_name + " = { " + hex(height) + ", " + hex(width) + ", " + "\n"
     for x in range(len(resized)):
         for y in range(len(resized[x])):
             result += convert_to_565(resized[x][y][0], resized[x][y][1], resized[x][y][2]) + ', '
