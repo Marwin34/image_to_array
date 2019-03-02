@@ -2,33 +2,8 @@ import pyperclip
 import cv2
 
 
-def convert_to_5bit(data):
-    max_hex = 255
-
-    percent = data / max_hex
-
-    five_bit = int(percent * 31)
-
-    return five_bit
-
-
-def convert_to_6bit(data):
-    max_hex = 255
-
-    percent = data / max_hex
-
-    six_bit = int(percent * 63)
-
-    return six_bit
-
-
 def convert_to_565(b, g, r):
-    result = convert_to_5bit(r)
-    result = result << 6
-    result = result | convert_to_6bit(g)
-    result = result << 5
-    result = result | convert_to_5bit(b)
-
+    result = ((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3)
     return '0x' + format(result, '04X')
 
 
@@ -40,7 +15,7 @@ def resize(img):
 
     dim = (width, height)
     # resize image
-    resized = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
+    resized = cv2.resize(img, dim, interpolation=cv2.INTER_NEAREST)
 
     return resized
 
@@ -59,7 +34,7 @@ def main():
 
     height, width, channels = resized.shape
 
-    result = "static const uint16_t PROGMEM " + array_name + " = { " + hex(width) + ", " + hex(height) + ", " + "\n"
+    result = "static const uint16_t PROGMEM " + array_name + "[] = { " + hex(width) + ", " + hex(height) + ", " + "\n"
     for x in range(len(resized)):
         for y in range(len(resized[x])):
             result += convert_to_565(resized[x][y][0], resized[x][y][1], resized[x][y][2]) + ', '
