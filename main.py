@@ -59,13 +59,13 @@ def main():
 
     height, width, channels = resized.shape
 
-    result = "static uint16_t PROGMEM " + array_name + " = { " + hex(height) + ", " + hex(width) + ", " + "\n"
+    result = "static const uint16_t PROGMEM " + array_name + " = { " + hex(width) + ", " + hex(height) + ", " + "\n"
     for x in range(len(resized)):
         for y in range(len(resized[x])):
             result += convert_to_565(resized[x][y][0], resized[x][y][1], resized[x][y][2]) + ', '
         result += "\n"
 
-    result = result[0:-3] + "};"
+    result = result[0:-3] + "\n};"
 
     print(result)
 
