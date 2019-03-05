@@ -108,12 +108,20 @@ class ImageConverter(object):
 
         self.image = cv2.imread(self.file_path.get())
 
-        if self.image is not None:
+        if self.image.size != 0:
             height, width, channels = self.image.shape
             self.file_width.set(width)
             self.file_height.set(height)
+            self.file_loaded = True
+        else:
+            self.file_loaded = False
+            self.print_on_canvas("Error while opening image {}, check if file exists!".format(self.file_path.get()))
 
     def convert(self):
+        if not self.file_loaded:
+            self.print_on_canvas("You need to load file, then you can convert it.")
+            return
+
         array_name = self.array_name_input.get()
 
         width = self.file_width.get()
@@ -130,10 +138,7 @@ class ImageConverter(object):
 
         result = result[0:-3] + "\n};"
 
-        self.result_text.configure(state='normal')
-        self.result_text.delete(1.0, tk.END)
-        self.result_text.insert('end', result)
-        self.result_text.configure(state='disabled')
+        self.print_on_canvas(result)
 
         file = open("result.txt", "w")
 
@@ -156,6 +161,12 @@ class ImageConverter(object):
 
     def copy_to_clipboard(self):
         pyperclip.copy(self.result_text.get('1.0', 'end-1c'))
+
+    def print_on_canvas(self, data):
+        self.result_text.configure(state='normal')
+        self.result_text.delete(1.0, tk.END)
+        self.result_text.insert('end', data)
+        self.result_text.configure(state='disabled')
 
 
 if __name__ == "__main__":
