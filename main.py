@@ -123,9 +123,19 @@ class ImageConverter(object):
             return
 
         array_name = self.array_name_input.get()
+        if array_name == "":
+            self.print_on_canvas("Error during conversion! You need to specify array name.")
+            return
 
         width = self.file_width.get()
+        if width <= 0:
+            self.print_on_canvas("Error during conversion! Invalid width value {}.".format(width))
+            return
+
         height = self.file_height.get()
+        if height <= 0:
+            self.print_on_canvas("Error during conversion! Invalid height value {}.".format(height))
+            return
 
         resized = self.resize(self.image)
 
