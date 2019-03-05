@@ -10,7 +10,10 @@ class ImageConverter(object):
 
         master.winfo_toplevel().title("Image to rgb565 converter")
         path_to_icon = os.path.dirname(os.path.abspath(__file__))+"\\dva.ico"
-        master.iconbitmap(path_to_icon)
+        try:
+            master.iconbitmap(path_to_icon)
+        except tk.TclError:
+            print("Wrong path to icon!")
 
         self.file_loaded = False
 
@@ -20,6 +23,7 @@ class ImageConverter(object):
         self.image_path_frame = tk.Frame(self.master)
         self.width_frame = tk.Frame(self.master)
         self.height_frame = tk.Frame(self.master)
+        self.array_name_frame = tk.Frame(self.master)
         self.convert_frame = tk.Frame(self.master)
         self.result_text_frame = tk.Frame(self.master)
 
@@ -42,6 +46,12 @@ class ImageConverter(object):
         self.width_label = tk.Label(self.width_frame, text="Width: ")
         self.height_label = tk.Label(self.height_frame, text="Height: ")
 
+        self.array_name = tk.StringVar()
+        self.array_name.set("obstacle")
+
+        self.array_name_label = tk.Label(self.array_name_frame, text="Array name: ")
+        self.array_name_input = tk.Entry(self.array_name_frame, textvariable=self.array_name)
+
         self.convert_button = tk.Button(self.convert_frame, text="Convert image", command=self.convert)
         self.copy_button = tk.Button(self.convert_frame, text="Copy result", command=self.copy_to_clipboard)
 
@@ -55,6 +65,7 @@ class ImageConverter(object):
         self.image_path_frame.pack()
         self.width_frame.pack()
         self.height_frame.pack()
+        self.array_name_frame.pack()
         self.convert_frame.pack()
         self.result_text_frame.pack()
 
@@ -68,6 +79,9 @@ class ImageConverter(object):
 
         self.height_label.pack(side=tk.LEFT)
         self.height_input.pack(side=tk.LEFT)
+
+        self.array_name_label.pack(side=tk.LEFT)
+        self.array_name_input.pack(side=tk.LEFT)
 
         self.convert_button.pack(side=tk.LEFT, padx=5, pady=5)
         self.copy_button.pack(side=tk.LEFT, padx=5, pady=5)
@@ -90,7 +104,7 @@ class ImageConverter(object):
         print("Here we go!")
         initial_dir = os.path.dirname(os.path.abspath(__file__))
         self.file_path.set(filedialog.askopenfilename(initialdir=initial_dir, title="Select file",
-                                                      filetypes=(("jpeg files", "*.jpg"), ("all files", "*.*"))))
+                                                      filetypes=(("png files", "*.png"), ("jpeg files", "*.jpg*"))))
 
         self.image = cv2.imread(self.file_path.get())
 
@@ -100,7 +114,7 @@ class ImageConverter(object):
             self.file_height.set(height)
 
     def convert(self):
-        array_name = "obstacle"
+        array_name = self.array_name_input.get()
 
         width = self.file_width.get()
         height = self.file_height.get()
